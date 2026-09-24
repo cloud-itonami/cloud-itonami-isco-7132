@@ -1,0 +1,34 @@
+;; What this vertical's robot physically does, declared for
+;; kotoba.robotics.process (kotoba-lang/robotics). `kbb -M:physics` runs it.
+;;
+;; README "Robotics premise": a shop scheduling/logistics coordination robot
+;; for spray painters and varnishers (ISCO 7132) schedules the crew, logs
+;; materials usage and progress, and coordinates spray-coating supply orders;
+;; it never sprays. The physics its schedule and its ventilation concerns
+;; depend on: whether the booth's exhaust duct can carry the airflow the
+;; booth needs, and how long a coated panel must stay in the drying oven.
+;;
+;; Every number without a cited source is marked `estimate` in its :basis.
+;; Replacing an estimate with a sourced value is this bot's growth work.
+{:physics/schema "itonami.physical-ai.spec.v1"
+ :repo "cloud-itonami/cloud-itonami-isco-7132"
+ :cases
+ [{:id :booth-exhaust-duct
+   :kind :pipe-flow
+   :procedure "spray booth exhaust: air drawn through a 400 mm galvanised duct, 18 m to the roof stack; the extract airflow is swept"
+   :params {:diameter-m 0.40 :length-m 18.0 :roughness-m 1.5e-4
+            :density-kg-m3 1.2 :viscosity-pa-s 1.8e-5 :pump-efficiency 0.60}
+   :sweep {:param :q-m3s :values [0.5 1.0 1.5 2.0 2.5 3.0]}
+   :quantity :pressure-drop-pa
+   :limit {:max 250.0 :basis "estimate: share of the exhaust fan's static pressure left for straight duct after filters and stack (fan curve not sourced)"}
+   :boundary {:lo 0.2 :hi 5.0}}
+  {:id :panel-drying-oven
+   :kind :thermal
+   :procedure "a varnished MDF panel dries in a 60 C recirculating oven; heat enters both faces, so half the thickness is modelled with an adiabatic mid-plane; the swept :thickness-m is that half-thickness (6-32 mm panels)"
+   :params {:conductivity-w-mk 0.12 :density-kg-m3 750.0 :specific-heat-j-kgk 1700.0
+            :t0-c 20.0 :t-hot-c 60.0 :h-front-w-m2k 25.0 :h-back-w-m2k 0.0
+            :threshold-c 50.0 :duration-s 7200.0}
+   :sweep {:param :thickness-m :values [0.003 0.006 0.009 0.012 0.016]}
+   :quantity :time-to-threshold-s
+   :limit {:max 1800.0 :basis "estimate: a 30-minute oven slot in the shop schedule for the panel core to reach 50 C"}
+   :boundary {:lo 0.001 :hi 0.03}}]}
