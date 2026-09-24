@@ -1,5 +1,5 @@
 (ns sprayshop.actor-test
-  (:require [clojure.test :refer [deftest is testing]]
+  (:require [kotoba.test :refer [deftest is testing]]
             [sprayshop.actor :as actor]
             [sprayshop.store :as store]))
 
