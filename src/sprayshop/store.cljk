@@ -1,6 +1,6 @@
 (ns sprayshop.store
   "SSoT for the ISCO-08 7132 spray-shop scheduling/logistics coordination
-  actor (itonami actor pattern, ADR-2607121000 / CLAUDE.md Actors
+  actor (itonami actor pattern, ADR-2607121000 / AGENTS.md Actors
   section; README's 'Robotics premise' — a shop scheduling/logistics
   coordination robot performs crew scheduling,
   task/materials-usage/progress-record logging and spray-coating-materials
